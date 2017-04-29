@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -38,6 +39,7 @@ namespace MouseTracker
         double Px2CmX { get; set; }
         double Px2CmY { get; set; }
         bool ForceClosing { get; set; }
+        Stopwatch Elapsed;
 
         #endregion
 
@@ -110,6 +112,7 @@ namespace MouseTracker
             }
 
             //timers
+            Elapsed = Stopwatch.StartNew();
             timerPosition.Interval = TimerPositionMS;
             timerPosition.Enabled = true;
             timerSave.Interval = TimerSaveMS;
@@ -151,14 +154,17 @@ namespace MouseTracker
 
         private void timerPosition_Tick(object sender, EventArgs e)
         {
+            long deltams = Elapsed.ElapsedMilliseconds;
+            Elapsed.Restart();
+
             int x2 = Cursor.Position.X;
             int y2 = Cursor.Position.Y;
             double dx = (x2 - x1) * Px2CmX;
             double dy = (y2 - y1) * Px2CmY;
             Mileage += Math.Sqrt(dx * dx + dy * dy);
-            TotalTime = TotalTime.Add(new TimeSpan(TimerPositionMS * 10000)); //ms to 100 ns
+            TotalTime = TotalTime.Add(new TimeSpan(deltams * 10000)); //ms to 100 ns
             if (x1 != x2 || y1 != y2)
-                MovingTime = MovingTime.Add(new TimeSpan(TimerPositionMS * 10000)); //ms to 100 ns
+                MovingTime = MovingTime.Add(new TimeSpan(deltams * 10000)); //ms to 100 ns
             x1 = x2;
             y1 = y2;
 
