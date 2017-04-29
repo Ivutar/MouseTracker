@@ -100,6 +100,7 @@
             this.sysTray.ContextMenuStrip = this.sysTrayMenu;
             this.sysTray.Icon = ((System.Drawing.Icon)(resources.GetObject("sysTray.Icon")));
             this.sysTray.Visible = true;
+            this.sysTray.DoubleClick += new System.EventHandler(this.sysTray_DoubleClick);
             // 
             // label1
             // 

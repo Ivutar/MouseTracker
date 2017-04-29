@@ -193,5 +193,11 @@ namespace MouseTracker
         {
             Hide();
         }
+
+        private void sysTray_DoubleClick(object sender, EventArgs e)
+        {
+            UpdateLabels();
+            Show();
+        }
     }
 }
