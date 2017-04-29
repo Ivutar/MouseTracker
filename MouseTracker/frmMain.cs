@@ -43,11 +43,17 @@ namespace MouseTracker
 
         #region [ config ]
 
-        Lazy<string> filename = new Lazy<string>(() => ConfigurationManager.AppSettings["filename"]);
+        Lazy<string> filepath = new Lazy<string>(() => {
+            string startuppath = Application.StartupPath;
+            string filename = ConfigurationManager.AppSettings["filename"];
+            string fullpath = Path.Combine(startuppath, filename);
+
+            return fullpath;
+        });
         Lazy<int> timerPositionMS = new Lazy<int>(() => int.Parse(ConfigurationManager.AppSettings["timerPositionMS"]));
         Lazy<int> timerSaveMS = new Lazy<int>(() => int.Parse(ConfigurationManager.AppSettings["timerSaveMS"]));
 
-        string FileName { get { return filename.Value; } }
+        string FilePath { get { return filepath.Value; } }
         int TimerPositionMS { get { return timerPositionMS.Value; } }
         int TimerSaveMS { get { return timerSaveMS.Value; } }
         bool AutoStartup { get { return ConfigurationManager.AppSettings["autoStartup"] == "1"; } }
@@ -94,7 +100,7 @@ namespace MouseTracker
             //load from file
             try
             {
-                string[] s = File.ReadAllLines(FileName);
+                string[] s = File.ReadAllLines(FilePath);
                 Mileage = double.Parse(s[0]);
                 TotalTime = new TimeSpan((long)(double.Parse(s[1]) * 10000)); //ms to 100 ns
                 MovingTime = new TimeSpan((long)(double.Parse(s[2]) * 10000)); //ms to 100 ns
@@ -164,7 +170,7 @@ namespace MouseTracker
         {
             try
             {
-                File.WriteAllText(FileName, string.Format("{0}\n{1}\n{2}", Mileage, TotalTime.TotalMilliseconds, MovingTime.TotalMilliseconds));
+                File.WriteAllText(FilePath, string.Format("{0}\n{1}\n{2}", Mileage, TotalTime.TotalMilliseconds, MovingTime.TotalMilliseconds));
             }
             catch
             {
